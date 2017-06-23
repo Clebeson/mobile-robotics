@@ -1,0 +1,86 @@
+#!/bin/bash
+
+__USER=$USER
+
+# Get super user privileges
+if [[ $EUID != 0 ]]; then
+  sudo "$0" "$@"
+  exit $?
+fi
+
+this_path=$PWD
+install_path=/tmp/install/
+mkdir -p $install_path && cd $install_path
+
+apt-get update && apt-get install -y --ignore-missing \
+   build-essential cmake git pkg-config autoconf libtool
+
+function find::folder {
+  if [ ! -d $1 ]; then
+    echo " [x] $(basename $1) not found..."
+    return 1
+  fi
+  echo " [x] $(basename $1) found..."
+  return 0
+}
+
+function find::file {
+  if [ ! -f $1 ]; then
+    echo " [x] $(basename $1) not found..."
+    return 1
+  fi
+  echo " [x] $(basename $1) found..."
+  return 0
+}
+
+function find::pkg {
+  if ! pkg-config --exists $1; then
+    echo " [x] $1 not found..."
+    return 1
+  fi
+  echo " [x] $1 found..."
+  return 0
+}
+
+function import::git {
+  if [ ! -d $(basename $1) ]; then
+    git clone $1
+  fi
+  echo -n $(basename $1)
+}
+
+function install::aria {
+  wget http://robots.mobilerobots.com/ARIA/download/current/ARIA-src-2.9.1.tar.gz
+  tar -xf ARIA-src-2.9.1.tar.gz
+  rm ARIA-src-2.9.1.tar.gz
+  cd Aria-src-2.9.1
+  make allLibs -j `nproc`
+  cp lib/* /usr/local/lib
+  mkdir /usr/local/include/Aria
+  cp include/* /usr/local/include/Aria
+  ldconfig
+}
+
+function install::mobilesim {
+  wget http://robots.mobilerobots.com/MobileSim/download/current/mobilesim_0.7.5+ubuntu12_i386.deb
+  gdebi --option=APT::Get::force-yes="true" --option=APT::Get::Assume-Yes="true" -n mobilesim_0.7.5+ubuntu12_i386.deb
+}
+
+if ! find::pkg grpc; then
+  import::git https://github.com/grpc/grpc
+  cd grpc
+  git submodule update --init
+  make -j `nproc`
+  make install
+  cd ..
+fi
+
+if ! find::folder /usr/local/include/Aria; then
+  install::aria
+fi
+
+if ! find::file /usr/local/bin/MobileSim; then
+  install::mobilesim
+fi
+
+cd $this_path

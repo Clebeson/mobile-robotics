@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+//import "google/protobuf/any.proto";
+//import "google/protobuf/timestamp.proto";
+
+package robot;
+
+message Pose {
+  float x = 1;
+  float y = 2;
+  float heading = 3;
+}
+
+message Velocity {
+  float linear = 1; // mm/s
+  float angular = 2; // rad/s
+}
+
+message Telemetry {
+  Pose pose = 1;
+  Velocity velocity = 2;
+}
+
+message SubscribeRequest {
+  
+}
+
+service Gateway {
+  rpc Subscribe (SubscribeRequest) returns (stream Telemetry);
+  rpc Configure (Telemetry) returns (Telemetry);
+}

@@ -1,0 +1,5 @@
+client/robot_pb2*
+gateway/robot.grpc.*
+gateway/robot.pb.*
+*.o
+gateway/gateway
