@@ -66,6 +66,9 @@ function install::mobilesim {
   gdebi --option=APT::Get::force-yes="true" --option=APT::Get::Assume-Yes="true" -n mobilesim_0.7.5+ubuntu12_i386.deb
 }
 
+
+
+
 if ! find::pkg grpc; then
   import::git https://github.com/grpc/grpc
   cd grpc
@@ -74,6 +77,16 @@ if ! find::pkg grpc; then
   make install
   cd ..
 fi
+
+if ! find::pkg protoc; then
+ 
+  curl -OL https://github.com/google/protobuf/releases/download/v3.2.0/protoc-3.2.0-linux-x86_64.zip
+  unzip protoc-3.2.0-linux-x86_64.zip -d protoc3
+  sudo mv protoc3/bin/* /usr/local/bin/
+  sudo mv protoc3/include/* /usr/local/include
+  protoc --version
+fi
+
 
 if ! find::folder /usr/local/include/Aria; then
   install::aria

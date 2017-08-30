@@ -1,5 +1,10 @@
 client/robot_pb2*
 gateway/robot.grpc.*
 gateway/robot.pb.*
+client/images/*
+client/records/*
+client/__pycache__
+protos/robot.pb.*
+*.pyc
 *.o
 gateway/gateway

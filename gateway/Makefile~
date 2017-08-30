@@ -26,7 +26,7 @@ LDFLAGS += -L/usr/local/lib `pkg-config --libs grpc++ grpc`       \
 else
 LDFLAGS += -L/usr/local/lib `pkg-config --libs grpc++ grpc`       \
            -Wl,--no-as-needed -lgrpc++_reflection -Wl,--as-needed \
-           -lprotobuf -lpthread -ldl -lAria -ldl -lm -lrt -lboost_program_options
+           -lprotobuf -lpthread -ldl -lAria -ldl -lm -lrt
 endif
 PROTOC = protoc
 GRPC_CPP_PLUGIN = grpc_cpp_plugin
